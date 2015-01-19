@@ -29,6 +29,10 @@
 			<directory>${basedir}/../io/io-service/dist/</directory>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
+		<fileSet>
+			<directory>${basedir}/../examples/io/dist/</directory>
+			<outputDirectory>/</outputDirectory>
+		</fileSet>
 	</fileSets>
 	<files>
 		<file>
@@ -45,6 +49,10 @@
 		</file>
 		<file>
 			<source>${basedir}/../io/io-service/target/io-service.jar</source>
+			<outputDirectory>/lib/</outputDirectory>
+		</file>
+		<file>
+			<source>${basedir}/../examples/io/target/examples-io.jar</source>
 			<outputDirectory>/lib/</outputDirectory>
 		</file>
 	</files>

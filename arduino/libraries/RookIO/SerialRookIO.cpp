@@ -1,15 +1,25 @@
-#include "Arduino.h"
 #include "SerialRookIO.h"
 
-void SerialRookIO::init(int baud)
+SerialRookIO::SerialRookIO(int baud)
+{
+  this->baud = baud;
+}
+
+void SerialRookIO::init()
 {
   Serial.begin(baud);
-  // wait to receive a single byte before allowing any logic to happen
-  readByte();
+  if (!initialized) {
+    // wait to receive a single byte before allowing any logic to happen
+    readByte();
+    initialized = true;
+  }
 }
 
 void SerialRookIO::writeByte(int value)
 {
+  if (!initialized) {
+    init();
+  }
   while(Serial.write(value) == 0);
 }
 
@@ -59,6 +69,9 @@ int SerialRookIO::readInt()
 
 void SerialRookIO::read()
 {
+  if (!initialized) {
+    init();
+  }
   if (Serial.available()) {
     int type = readByte();
     if(type == 0) {
@@ -75,7 +88,7 @@ void SerialRookIO::read()
       }
     } else if(type == 1) {
       int length = readInt();
-      char* buf = new char[length];
+      uint8_t* buf = new uint8_t[length];
       readByte();
       readByte();
       readByte();
@@ -121,7 +134,7 @@ void SerialRookIO::sendPrimitiveInput(long id, long value)
   writeLong(value);
 }
 
-void SerialRookIO::sendBufferInput(long id, char* buffer, int length)
+void SerialRookIO::sendBufferInput(long id, uint8_t* buffer, unsigned int length)
 {
   // message type
   writeByte(1);

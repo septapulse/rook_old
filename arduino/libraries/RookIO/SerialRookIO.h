@@ -5,13 +5,12 @@
 
 class SerialRookIO : public RookIO {
   public:
-    SerialRookIO() { }
-    void init(int baud);
+    SerialRookIO(int baud);
     void read();
     void setPrimitiveOutputCallback(PrimitiveCallback& callback);
     void setBufferOutputCallback(BufferCallback& callback);
     void sendPrimitiveInput(long id, long value);
-    void sendBufferInput(long id, char* buffer, int length);
+    void sendBufferInput(long id, uint8_t* buffer, unsigned int length);
     ~SerialRookIO() { }
   private:
     PrimitiveCallback* primitiveCallback = 0;
@@ -22,6 +21,9 @@ class SerialRookIO : public RookIO {
     int readInt();
     int readByte();
     void writeByte(int b);
+    void init();
+    int baud;
+    bool initialized = false;
 };
 
 #endif
