@@ -30,7 +30,7 @@
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>${basedir}/../examples/io/dist/</directory>
+			<directory>${basedir}/../examples/dist/</directory>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
 	</fileSets>
@@ -52,7 +52,7 @@
 			<outputDirectory>/lib/</outputDirectory>
 		</file>
 		<file>
-			<source>${basedir}/../examples/io/target/examples-io.jar</source>
+			<source>${basedir}/../examples/target/examples.jar</source>
 			<outputDirectory>/lib/</outputDirectory>
 		</file>
 	</files>
