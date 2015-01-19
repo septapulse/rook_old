@@ -63,8 +63,8 @@ public class DisruptorRouter implements Router {
 	
 	public DisruptorRouter(Properties props) throws Exception {
 		this(Integer.parseInt(props.getProperty("ringBufferSize", "64")),
-				Instantiate.instantiate(props.getProperty("waitStrategy", "com.lmax.disruptor.BlockingWaitStrategy")),
-				Instantiate.instantiate(props.getProperty("executorFactory", "org.septapulse.rook.core.router.disruptor.FixedExecutorServiceFactory")),
+				Instantiate.instantiate(DisruptorRouterBuilder.class.getClassLoader(), props.getProperty("waitStrategy", "com.lmax.disruptor.BlockingWaitStrategy")),
+				Instantiate.instantiate(DisruptorRouterBuilder.class.getClassLoader(), props.getProperty("executorFactory", "org.septapulse.rook.core.router.disruptor.FixedExecutorServiceFactory")),
 				Integer.parseInt(props.getProperty("payload.initialSize", "1024")),
 				Boolean.parseBoolean(props.getProperty("payload.checkBounds", "true")),
 				Boolean.parseBoolean(props.getProperty("payload.fillOnReset", "true")));

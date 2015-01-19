@@ -32,34 +32,50 @@ public class DirectoryConfigurationLoader {
 	private static final String EXT_CFG = ".cfg";
 	private static final String FILE_ROUTER = "router"+EXT_CFG;
 	
-	public static Configuration load(File directory) throws Exception {
+	public static Configuration load(File directory, String... configs) throws Exception {
 		if(!directory.exists() || !directory.isDirectory()) {
 			throw new IllegalArgumentException(directory.getAbsolutePath() + " is not a directory");
 		}
-		File routerFile = new File(directory, "router.cfg");
+		final File routerFile = new File(directory, "router.cfg");
 		if(!routerFile.exists() || !routerFile.isFile()) {
 			throw new IllegalArgumentException(routerFile.getAbsolutePath() + " is not present");
 		}
 		
-		Configuration config = new Configuration();
+		final Configuration config = new Configuration();
 		
-		Properties router = loadProperties(routerFile);
+		final Properties router = loadProperties(routerFile);
 		config.setRouter(router);
 		
-		List<Properties> services = new ArrayList<>();
-		for(File file : directory.listFiles()) {
-			if(file.getName().endsWith(EXT_CFG) && !file.getName().equals(FILE_ROUTER)) {
-				Properties props = loadProperties(file);
-				services.add(props);
-			}
-		}
+		final List<Properties> services = loadServices(directory, configs);
 		config.setServices(services);
 		
 		return config;
 	}
 	
+	private static List<Properties> loadServices(File directory,
+			String[] configs) throws Exception {
+		List<Properties> services = new ArrayList<>();
+		if(configs == null || configs.length == 0) {
+			for(File file : directory.listFiles()) {
+				if(file.getName().endsWith(EXT_CFG) && !file.getName().equals(FILE_ROUTER)) {
+					final Properties props = loadProperties(file);
+					services.add(props);
+				}
+			}
+		} else {
+			for(String config : configs) {
+				final File file = new File(directory, config+EXT_CFG);
+				if(file.getName().endsWith(EXT_CFG) && !file.getName().equals(FILE_ROUTER)) {
+					final Properties props = loadProperties(file);
+					services.add(props);
+				}
+			}
+		}
+		return services;
+	}
+
 	private static Properties loadProperties(File cfg) throws Exception {
-		Properties props = new Properties();
+		final Properties props = new Properties();
 		props.load(new FileReader(cfg));
 		return props;
 	}

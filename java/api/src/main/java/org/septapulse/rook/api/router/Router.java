@@ -40,7 +40,8 @@ public interface Router {
 
 	/**
 	 * Initialize the router and all of its child services
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	void init() throws Exception;
 

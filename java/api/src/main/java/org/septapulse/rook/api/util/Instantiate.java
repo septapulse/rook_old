@@ -18,6 +18,7 @@ package org.septapulse.rook.api.util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 
 /**
  * 
@@ -27,22 +28,28 @@ import java.lang.reflect.InvocationTargetException;
 public class Instantiate {
 
 	@SuppressWarnings("unchecked")
-	public static <T> T instantiate(String className) throws ClassNotFoundException,
-			InstantiationException, IllegalAccessException {
-		Class<?> c = Class.forName(className);
-		return (T)c.newInstance();
+	public static <T> T instantiate(final ClassLoader classLoader,
+			final String className) throws ClassNotFoundException,
+			InstantiationException, IllegalAccessException,
+			MalformedURLException {
+		Class<?> c = Class.forName(className, true, classLoader);
+		return (T) c.newInstance();
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static <T> T instantiate(String className, Object... args)
+	public static <T> T instantiate(final ClassLoader classLoader,
+			final String className, final Object... args)
 			throws ClassNotFoundException, NoSuchMethodException,
-			SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Class<?> c = Class.forName(className);
-		Class<?>[] parameterTypes = (Class<?>[]) new Class[args.length];
+			SecurityException, InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException,
+			MalformedURLException {
+		final Class<?> c = Class.forName(className, true, classLoader);
+		final Class<?>[] parameterTypes = (Class<?>[]) new Class[args.length];
 		for (int i = 0; i < args.length; i++) {
 			parameterTypes[i] = args[i].getClass();
 		}
-		Constructor<?> constructor = c.getConstructor(parameterTypes);
+		final Constructor<?> constructor = c.getConstructor(parameterTypes);
 		return (T) constructor.newInstance(args);
 	}
+	
 }

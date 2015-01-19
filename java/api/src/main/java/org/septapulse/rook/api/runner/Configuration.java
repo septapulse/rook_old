@@ -44,4 +44,12 @@ public class Configuration {
 	public void setServices(List<Properties> services) {
 		this.services = services;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("Router=").append(router);
+		sb.append(" Services=").append(services);
+		return sb.toString();
+	}
 }
