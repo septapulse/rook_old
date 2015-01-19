@@ -71,7 +71,7 @@ public class RookRunner {
 		} else {
 			final List<String> configs = parseConfigs(file);
 			log("Loading from configurations " + configs + " from directory '" + dir.getAbsolutePath() + "'");
-			config = DirectoryConfigurationLoader.load(file, configs.toArray(new String[configs.size()]));
+			config = DirectoryConfigurationLoader.load(dir, configs.toArray(new String[configs.size()]));
 		}
 		
 		log("Loaded configuration: " + config);
