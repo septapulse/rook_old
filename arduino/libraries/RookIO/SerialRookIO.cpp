@@ -1,25 +1,7 @@
 #include "SerialRookIO.h"
 
-SerialRookIO::SerialRookIO(int baud)
-{
-  this->baud = baud;
-}
-
-void SerialRookIO::init()
-{
-  Serial.begin(baud);
-  if (!initialized) {
-    // wait to receive a single byte before allowing any logic to happen
-    readByte();
-    initialized = true;
-  }
-}
-
 void SerialRookIO::writeByte(int value)
 {
-  if (!initialized) {
-    init();
-  }
   while(Serial.write(value) == 0);
 }
 
@@ -69,9 +51,6 @@ int SerialRookIO::readInt()
 
 void SerialRookIO::read()
 {
-  if (!initialized) {
-    init();
-  }
   if (Serial.available()) {
     int type = readByte();
     if(type == 0) {

@@ -5,7 +5,7 @@
 
 class SerialRookIO : public RookIO {
   public:
-    SerialRookIO(int baud);
+    SerialRookIO() { }
     void read();
     void setPrimitiveOutputCallback(PrimitiveCallback& callback);
     void setBufferOutputCallback(BufferCallback& callback);
@@ -21,9 +21,6 @@ class SerialRookIO : public RookIO {
     int readInt();
     int readByte();
     void writeByte(int b);
-    void init();
-    int baud;
-    bool initialized = false;
 };
 
 #endif

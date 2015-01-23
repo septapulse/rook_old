@@ -125,10 +125,6 @@ public class SerialIOService extends AbstractService {
 		logger.info("Waiting for Arduino...");
 		Thread.sleep(5000);
 
-		// Send a single byte to the Arduino to tell it a connection has been
-		// established and to finish the init()
-		serialPort.writeByte((byte) 0);
-
 		logger.info("Starting Read Loop");
 		readLoop = new ReadLoop();
 		new Thread(readLoop, "SerialIOService Reader").start();
