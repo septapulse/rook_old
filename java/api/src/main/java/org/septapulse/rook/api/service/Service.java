@@ -59,6 +59,12 @@ public interface Service {
 	void init() throws Exception;
 
 	/**
+	 * Informs this service that all other services have successfully been
+	 * initialized.
+	 */
+	void started();
+
+	/**
 	 * Called to shutdown this module. All threads should gracefully terminate
 	 * within an acceptable amount of time after this method is called.
 	 */

@@ -46,4 +46,8 @@ public abstract class AbstractService implements Service {
 		return sender;
 	}
 
+	@Override
+	public void started() {
+		// can be overridden by implementing class
+	}
 }

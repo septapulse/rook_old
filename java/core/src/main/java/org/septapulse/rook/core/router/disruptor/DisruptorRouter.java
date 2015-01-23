@@ -132,6 +132,10 @@ public class DisruptorRouter implements Router {
 			initializedServices.add(service);
 		}
 		
+		for(Service service : serviceIds.keySet()) {
+			service.started();
+		}
+		
 		logger.info("Starting Disruptor");
 		disruptor.start();
 		logger.info("Initialized");
