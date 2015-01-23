@@ -57,6 +57,11 @@ public class LedBlinkService extends AbstractService {
 		ioProxy = new IOProxy(ioServiceId, 
 				getSender(), getReceiver(), null, 1024);
 		loop = new Loop();
+	}
+	
+	@Override
+	public void started() {
+		// Don't start the blink thread until all threads are initialized
 		new Thread(loop, "LED Blinker").start();
 	}
 
