@@ -18,12 +18,14 @@ package org.septapulse.rook.api.runner;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -47,47 +49,87 @@ public class RookRunner {
 	private static final String KEY_JAR = "jar";
 	private static final String KEY_IMPL = "impl";
 	private static final String DIRECTORY_LIB = "lib/";
+	private static final String DIRECTORY_CFG_SERVICES = "cfg/services/";
+	private static final String DIRECTORY_CFG_LISTS = "cfg/lists/";
+	private static final String DIRECTORY_CFG = "cfg/";
 	private static final String EXTENSION_JAR = ".jar";
+	private static final String EXTENSION_CFG = ".cfg";
+	private static final String EXTENSION_LIST = ".list";
 	
-	public static void main(String[] args) throws Exception {
-		if(args.length == 0) {
-			log("No configuration argument specified. Using working directory.");
-			args = new String[] { "." };
+	public static void main(final String[] args) throws Exception {
+		String servicesStr = null;
+		String serviceList = null;
+		String router = "router";
+		for(int i = 0; i < args.length; i++) {
+			if("--services".equals(args[i]) && i < args.length-1)
+				servicesStr = args[i+1];
+			else if("--serviceList".equals(args[i]) && i < args.length-1)
+				serviceList = args[i+1];
+			else if("--router".equals(args[i]) && i < args.length-1)
+				router = args[i+1];
 		}
-		final String cfgDirectory = args[0];
-		final String cfgFile = args.length > 1 ? args[1] : null;
-		final File dir = new File(cfgDirectory);
-		final File file = cfgFile == null ? null : new File(cfgFile);
-
-		if(!dir.exists() || !dir.isDirectory()) {
-			log("ERROR! Configuration directory does not exist. path=" + dir.getAbsolutePath());
+		if(servicesStr == null && serviceList == null) {
+			log("servicesList or services must be defined");
+			log("Examples: ");
+			log("    RookRunner --services io-service-serial,example-led-service");
+			log("    RookRunner --serviceList example-led --router router");
 			System.exit(-1);
-		} 
-		
-		Configuration config = null;
-		if(file == null) {
-			log("Loading from all configurations in directory '" + dir.getAbsolutePath() + "'");
-			config = DirectoryConfigurationLoader.load(dir);
-		} else {
-			final List<String> configs = parseConfigs(file);
-			log("Loading from configurations " + configs + " from directory '" + dir.getAbsolutePath() + "'");
-			config = DirectoryConfigurationLoader.load(dir, configs.toArray(new String[configs.size()]));
 		}
+		if(servicesStr != null && serviceList != null) {
+			log("serviceList and services cannot both be defined");
+			System.exit(-1);
+		}
+
+		final String[] servicePaths = parseServicePaths(servicesStr, serviceList);
+		final String routerPath = DIRECTORY_CFG + router + EXTENSION_CFG;
+		
+		log("Resolved Router Path: " + routerPath);
+		log("Resolved Service Paths: " + Arrays.toString(servicePaths));
+		
+		Configuration config = new Configuration();
+		List<Properties> services = new ArrayList<>();
+		for(String servicePath : servicePaths)
+			services.add(loadProperties(servicePath));
+		config.setServices(services);
+		config.setRouter(loadProperties(routerPath));
 		
 		log("Loaded configuration: " + config);
 		start(config);
 	}
 	
-	private static List<String> parseConfigs(File file) throws IOException {
-		final BufferedReader reader = new BufferedReader(new FileReader(file));
+	private static Properties loadProperties(String path) throws IOException {
+		FileInputStream in = null;
 		try {
-			final List<String> configs = new ArrayList<>();
-			String line;
-			while((line = reader.readLine()) != null)
-				configs.add(line);
-			return configs;
+			Properties props = new Properties();
+			in = new FileInputStream(path);
+			props.load(in);
+			return props;
 		} finally {
-			reader.close();
+			if(in != null)
+				in.close();
+		}
+	}
+
+	private static String[] parseServicePaths(String servicesStr, String serviceList) throws IOException {
+		if(serviceList == null) {
+			final String[] split = servicesStr.split(",");
+			final String[] services = new String[split.length];
+			for(int i = 0; i < split.length; i++) {
+				services[i] = DIRECTORY_CFG_SERVICES + split[i].trim() + EXTENSION_CFG;
+			}
+			return services;
+		} else {
+			final BufferedReader reader = new BufferedReader(new FileReader(
+					DIRECTORY_CFG_LISTS + serviceList + EXTENSION_LIST));
+			final List<String> services = new ArrayList<>();
+			try {
+				String line;
+				while((line = reader.readLine()) != null)
+					services.add(DIRECTORY_CFG_SERVICES + line + EXTENSION_CFG);
+			} finally {
+				reader.close();
+			}
+			return services.toArray(new String[services.size()]);
 		}
 	}
 
