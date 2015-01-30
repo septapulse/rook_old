@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * ### Required ###<br>
  * port = 4444<br>
  * ### Optional ###<br>
+ * host = arduinoyun
  * readBufferSize = 1480
  * 
  * @author Eric Thill
