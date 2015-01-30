@@ -76,11 +76,14 @@ class DefaultMutableBuffer implements MutableBuffer {
 
 	@Override
 	public void reserve(int capacity) {
-		while(capacity > bytes.length)
-			capacity *= 2;
-		bytes = new byte[capacity];
-		writeByteBuffer = ByteBuffer.wrap(bytes);
-		readByteBuffer = writeByteBuffer.asReadOnlyBuffer();
+		if(capacity > bytes.length) {
+			int newCapacity = bytes.length;
+			while(newCapacity < capacity)
+				newCapacity *= 2;
+			bytes = new byte[newCapacity];
+			writeByteBuffer = ByteBuffer.wrap(bytes);
+			readByteBuffer = writeByteBuffer.asReadOnlyBuffer();
+		}
 	}
 
 	@Override

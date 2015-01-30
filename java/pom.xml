@@ -17,7 +17,6 @@
 	<modules>
 		<module>api</module>
 		<module>core</module>
-		<module>io</module>
 		<module>examples</module>
 		<module>build</module>
 	</modules>

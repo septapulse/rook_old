@@ -39,7 +39,7 @@ long TcpRookIO::readLong()
 {
   long v = 0;
   for(int i = 0; i < 8; i++) {
-    v |= (readByte() >> i*8);
+    v |= (readByte() << i*8);
   }
   return v;
 }
@@ -48,40 +48,42 @@ int TcpRookIO::readInt()
 {
   int v = 0;
   for(int i = 0; i < 4; i++) {
-    v |= (readByte() >> i*8);
+    v |= (readByte() << i*8);
   }
   return v;
 }
 
 void TcpRookIO::read()
 {
-  int type = readByte();
-  if(type == 0) {
-    int numValues = readInt();
-    readByte();
-    readByte();
-    readByte();
-    for(int i = 0; i < numValues; i++) {
-      long id = readLong();
-      long value = readLong();
-      if(primitiveCallback != NULL) {
-        (*primitiveCallback)(id, value);
+  if(client->available()) {
+    int type = readByte();
+    if(type == 0) {
+      int numValues = readInt();
+      readByte();
+      readByte();
+      readByte();
+      for(int i = 0; i < numValues; i++) {
+        long id = readLong();
+        long value = readLong();
+        if(primitiveCallback != NULL) {
+          (*primitiveCallback)(id, value);
+        }
       }
+    } else if(type == 1) {
+      int length = readInt();
+      uint8_t* buf = new uint8_t[length];
+      readByte();
+      readByte();
+      readByte();
+      long id = readLong();
+      for(int i = 0; i < length; i++) {
+        buf[i] = readByte();
+      }
+      if(bufferCallback != NULL) {
+        (*bufferCallback)(id, buf, length);
+      }
+      delete [] buf;
     }
-  } else if(type == 1) {
-    int length = readInt();
-    uint8_t* buf = new uint8_t[length];
-    readByte();
-    readByte();
-    readByte();
-    long id = readLong();
-    for(int i = 0; i < length; i++) {
-      buf[i] = readByte();
-    }
-    if(bufferCallback != NULL) {
-      (*bufferCallback)(id, buf, length);
-    }
-    delete [] buf;
   }
 }
 

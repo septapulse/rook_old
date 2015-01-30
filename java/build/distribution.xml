@@ -18,19 +18,19 @@
 	</dependencySets>
 	<fileSets>
 		<fileSet>
-			<directory>${basedir}/../build/dist/</directory>
+			<directory>${basedir}/dist</directory>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>${basedir}/../core/dist/</directory>
+			<directory>${basedir}/../core/disruptor-router/dist</directory>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>${basedir}/../io/io-service/dist/</directory>
+			<directory>${basedir}/../core/io-service/dist</directory>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>${basedir}/../examples/dist/</directory>
+			<directory>${basedir}/../examples/example-led-service/dist</directory>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
 	</fileSets>
@@ -44,15 +44,15 @@
 			<outputDirectory>/lib/</outputDirectory>
 		</file>
 		<file>
-			<source>${basedir}/../core/target/core.jar</source>
+			<source>${basedir}/../core/disruptor-router/target/disruptor-router.jar</source>
 			<outputDirectory>/lib/</outputDirectory>
 		</file>
 		<file>
-			<source>${basedir}/../io/io-service/target/io-service.jar</source>
+			<source>${basedir}/../core/io-service/target/io-service.jar</source>
 			<outputDirectory>/lib/</outputDirectory>
 		</file>
 		<file>
-			<source>${basedir}/../examples/target/examples.jar</source>
+			<source>${basedir}/../examples/example-led-service/target/example-led-service.jar</source>
 			<outputDirectory>/lib/</outputDirectory>
 		</file>
 	</files>
