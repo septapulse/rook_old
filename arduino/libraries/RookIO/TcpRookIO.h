@@ -6,7 +6,9 @@
 
 class TcpRookIO : public RookIO {
   public:
-    TcpRookIO(Client& client);
+    TcpRookIO() { };
+    TcpRookIO(Client& client) {  this->client = &client; };
+    void setClient(Client& client) { this->client = &client; }
     void read();
     void setPrimitiveOutputCallback(PrimitiveCallback& callback);
     void setBufferOutputCallback(BufferCallback& callback);

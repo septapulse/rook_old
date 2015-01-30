@@ -1,10 +1,5 @@
 #include "TcpRookIO.h"
 
-TcpRookIO::TcpRookIO(Client& client)
-{
-  this->client = &client;
-}
-
 void TcpRookIO::writeByte(int value)
 {
   client->write((uint8_t)value);
