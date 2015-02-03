@@ -154,7 +154,7 @@ public class RookRunner {
 		final String jar = props.getProperty(KEY_JAR);
 		final String impl = props.getProperty(KEY_IMPL);
 		final String[] classpath = jar == null ? null : new String[1];
-		classpath[0] = "file://"+new File(".").getAbsolutePath()+"/"+DIRECTORY_LIB+jar+EXTENSION_JAR;
+		classpath[0] = "file:"+new File(".").getAbsolutePath()+"/"+DIRECTORY_LIB+jar+EXTENSION_JAR;
 		if (impl == null) {
 			throw new IllegalAccessException("service with configured name '"
 					+ name + "' does not specify " + KEY_IMPL);
