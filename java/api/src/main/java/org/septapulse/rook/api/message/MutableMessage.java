@@ -19,6 +19,7 @@ package org.septapulse.rook.api.message;
 import java.nio.ByteOrder;
 
 import org.septapulse.rook.api.service.id.MutableServiceId;
+import org.septapulse.rook.api.service.id.ServiceId;
 
 /**
  * Mutable implementation of a {@link Message}
@@ -33,6 +34,7 @@ public class MutableMessage implements Message {
 	private final boolean fillPayloadOnReset;
 	private MutableBuffer payload;
 	private boolean broadcast;
+	private long uniqueID;
 	
 	public MutableMessage(
 			final int initialPayloadSize, 
@@ -73,7 +75,36 @@ public class MutableMessage implements Message {
 		return payload;
 	}
 	
+	public void setFrom(ServiceId from) {
+		setFrom(from.getValue());
+	}
+	
+	public void setFrom(long from) {
+		this.from.setValue(from);
+	}
+	
+	public void setTo(ServiceId to) {
+		if(to == null) {
+			setBroadcast(true);
+		} else {
+			setTo(to.getValue());
+		}
+	}
+	
+	public void setTo(long to) {
+		this.to.setValue(to);
+	}
+	
 	public void setBroadcast(boolean broadcast) {
 		this.broadcast = broadcast;
+	}
+	
+	@Override
+	public long getUniqueID() {
+		return uniqueID;
+	}
+	
+	public void setUniqueID(long uniqueID) {
+		this.uniqueID = uniqueID;
 	}
 }

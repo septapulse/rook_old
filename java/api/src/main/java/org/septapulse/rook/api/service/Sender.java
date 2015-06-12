@@ -16,9 +16,8 @@
  */
 package org.septapulse.rook.api.service;
 
-import org.septapulse.rook.api.message.MutableBuffer;
+import org.septapulse.rook.api.message.MutableMessage;
 import org.septapulse.rook.api.router.Router;
-import org.septapulse.rook.api.service.id.ServiceId;
 
 /**
  * Sends messages to services.
@@ -26,41 +25,25 @@ import org.septapulse.rook.api.service.id.ServiceId;
  * @author Eric Thill
  *
  */
-public interface Sender {
+public interface Sender{
 	/**
 	 * Reserve the next message to send. This message should be populated and
 	 * sent immediately as various {@link Router} implementations may block all
-	 * thread receivers until this message is sent. As a result, Buffers
-	 * returned from this method must NEVER be cached.
+	 * thread receivers until this message is sent. As a result, Messages
+	 * returned from this method must NEVER be cached. The default value of the
+	 * "from" field in the message will be this service's ID.
 	 * 
-	 * @return the buffer to populate
+	 * @return the message to populate
 	 */
-	MutableBuffer nextMessage();
+	MutableMessage nextMessage();
 
 	/**
-	 * Send the GrowableBuffer returned by next() to the given Service ID. It
-	 * will be addressed from this sender. If 'to' is null, this message will be
-	 * broadcast to all services. Otherwise it will only be sent to services
-	 * with the given 'to' service ID.
+	 * Dispatch the given message. The message must have been retrieved from
+	 * this class's nextMessage() function.
 	 * 
-	 * @param to
-	 *            The 'to' ID to address in the message. Null will broadcast to
-	 *            all Services.
+	 * @param message
+	 *            The message to send
 	 */
-	void send(ServiceId to);
-
-	/**
-	 * Send the GrowableBuffer returned by next() to the given Service ID. It
-	 * will be addressed from the given "from" sender ID. If 'to' is null, this
-	 * message will be broadcast to all services. Otherwise it will only be sent
-	 * to services with the given 'to' service ID.
-	 * 
-	 * @param to
-	 *            The 'to' ID to address in the message. Null will broadcast to
-	 *            all Services.
-	 * @param from
-	 *            The 'from' ID to address int the message.
-	 */
-	void send(ServiceId to, ServiceId from);
+	void send(MutableMessage message);
 
 }

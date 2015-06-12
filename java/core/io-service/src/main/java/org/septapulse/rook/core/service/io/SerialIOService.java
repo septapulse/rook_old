@@ -25,6 +25,7 @@ import jssc.SerialPortException;
 
 import org.septapulse.rook.api.message.Message;
 import org.septapulse.rook.api.message.MutableBuffer;
+import org.septapulse.rook.api.message.MutableMessage;
 import org.septapulse.rook.api.service.AbstractService;
 import org.septapulse.rook.api.service.MessageCallback;
 import org.septapulse.rook.api.util.BufferUtil;
@@ -173,7 +174,8 @@ public class SerialIOService extends AbstractService {
 					}
 
 					// forward message to router
-					final MutableBuffer sendBuffer = getSender().nextMessage();
+					final MutableMessage msg = getSender().nextMessage();
+					final MutableBuffer sendBuffer = msg.getPayload();
 					final ByteBuffer sendByteBuffer = sendBuffer
 							.asWritableByteBuffer(header.length + body.length);
 					sendByteBuffer.put(header);

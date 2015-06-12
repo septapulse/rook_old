@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.septapulse.rook.api.message.Message;
+import org.septapulse.rook.api.message.MutableMessage;
 import org.septapulse.rook.api.router.Router;
 import org.septapulse.rook.api.service.Sender;
 import org.septapulse.rook.api.service.id.ServiceId;
@@ -43,10 +44,12 @@ public class DisruptorRouterTest {
 	public void testSendReceive() throws Exception {
 		// send message from TEST1 to TEST2
 		Sender sender = testService1.getServiceSender();
-		ByteBuffer sendBuffer = sender.nextMessage().asWritableByteBuffer(8);
+		MutableMessage msg = sender.nextMessage();
+		ByteBuffer sendBuffer = msg.getPayload().asWritableByteBuffer(8);
 		sendBuffer.putInt(1111);
 		sendBuffer.putInt(2222);
-		sender.send(testService2Id);
+		msg.setTo(testService2Id);
+		sender.send(msg);
 		
 		Message received = testService2.getQueue().poll(1, TimeUnit.SECONDS);
 		Assert.assertEquals(received.getTo(), testService2Id);
@@ -61,16 +64,20 @@ public class DisruptorRouterTest {
 	public void testSendReceiveMultiple() throws Exception {
 		// send message 1 from TEST1 to TEST2
 		Sender sender = testService1.getServiceSender();
-		ByteBuffer sendBuffer = sender.nextMessage().asWritableByteBuffer(8);
+		MutableMessage msg = sender.nextMessage();
+		ByteBuffer sendBuffer = msg.getPayload().asWritableByteBuffer(8);
 		sendBuffer.putInt(1111);
 		sendBuffer.putInt(2222);
-		sender.send(testService2Id);
+		msg.setTo(testService2Id);
+		sender.send(msg);
 		
 		// send message 2 from TEST1 to TEST2
-		sendBuffer = sender.nextMessage().asWritableByteBuffer(8);
+		msg = sender.nextMessage();
+		sendBuffer = msg.getPayload().asWritableByteBuffer(8);
 		sendBuffer.putInt(3333);
 		sendBuffer.putInt(4444);
-		sender.send(testService2Id);
+		msg.setTo(testService2Id);
+		sender.send(msg);
 		
 		Message received = testService2.getQueue().poll(1, TimeUnit.SECONDS);
 		Assert.assertEquals(received.getTo(), testService2Id);
@@ -93,10 +100,12 @@ public class DisruptorRouterTest {
 	public void testBroadcast() throws Exception {
 		// send message from TEST1 to TEST2
 		Sender sender = testService1.getServiceSender();
-		ByteBuffer sendBuffer = sender.nextMessage().asWritableByteBuffer(8);
+		MutableMessage msg = sender.nextMessage();
+		ByteBuffer sendBuffer = msg.getPayload().asWritableByteBuffer(8);
 		sendBuffer.putInt(1111);
 		sendBuffer.putInt(2222);
-		sender.send(null);
+		msg.setTo(null);
+		sender.send(msg);
 		
 		Message received1 = testService1.getQueue().poll(1, TimeUnit.SECONDS);
 		Assert.assertNull(received1.getTo());

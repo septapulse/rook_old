@@ -26,6 +26,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.septapulse.rook.api.message.MutableBuffer;
 import org.septapulse.rook.api.message.Message;
+import org.septapulse.rook.api.message.MutableMessage;
 import org.septapulse.rook.api.service.AbstractService;
 import org.septapulse.rook.api.service.MessageCallback;
 import org.septapulse.rook.api.service.id.MutableServiceId;
@@ -86,12 +87,15 @@ public class MqttService extends AbstractService {
 			boolean broadcast = receiveBuffer[0] != FALSE;
 			to.setValue(IOUtil.readLong(receiveBuffer, 1));
 			from.setValue(IOUtil.readLong(receiveBuffer, 9));
-			final MutableBuffer payload = getSender().nextMessage();
+			final MutableMessage msg = getSender().nextMessage();
+			final MutableBuffer payload = msg.getPayload();
 			payload.copyFrom(receiveBuffer, 0, receiveBuffer.length);
 			if(broadcast) {
-				getSender().send(null, from);
+				msg.setTo(null);
 			} else {
-				getSender().send(to, from);
+				msg.setTo(to);
+				msg.setFrom(from);
+				getSender().send(msg);
 			}
 		}
 		

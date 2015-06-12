@@ -56,5 +56,12 @@ public interface Message {
 	 * @return payload
 	 */
 	Buffer getPayload();
+	
+	/**
+	 * Used internally by the Router
+	 * 
+	 * @return the unique ID
+	 */
+	long getUniqueID();
 
 }

@@ -16,10 +16,8 @@
  */
 package org.septapulse.rook.core.router.disruptor;
 
-import org.septapulse.rook.api.message.MutableBuffer;
 import org.septapulse.rook.api.message.MutableMessage;
 import org.septapulse.rook.api.service.Sender;
-import org.septapulse.rook.api.service.id.ServiceId;
 
 import com.lmax.disruptor.RingBuffer;
 
@@ -32,8 +30,6 @@ class DisruptorSender implements Sender {
 	
 	private final RingBuffer<MutableMessage> ringBuffer;
 	private final long serviceId;
-	private long curSequence;
-	private MutableMessage curEvent;
 	
 	public DisruptorSender(long serviceId, RingBuffer<MutableMessage> ringBuffer) {
 		this.serviceId = serviceId;
@@ -41,36 +37,19 @@ class DisruptorSender implements Sender {
 	}
 	
 	@Override
-	public MutableBuffer nextMessage() {
-		if(curEvent != null)
-			throw new IllegalStateException("Cannot make conncurrent calls to next(). Must call send(...)");
-		curSequence = ringBuffer.next();
-		curEvent = ringBuffer.get(curSequence);
-		curEvent.reset();
-		return curEvent.getPayload();
+	public MutableMessage nextMessage() {
+		final long seq = ringBuffer.next();
+		MutableMessage msg = ringBuffer.get(seq);
+		msg.reset();
+		msg.setUniqueID(seq);
+		msg.getFrom().setValue(serviceId);
+		return msg;
 	}
 	
 	@Override
-	public void send(ServiceId to) {
-		send(to, serviceId);
-	}
-	
-	@Override
-	public void send(ServiceId to, ServiceId from) {
-		send(to, from.getValue());
-	}
-	
-	private void send(ServiceId to, long from) {
-		curEvent.getFrom().setValue(from);
-		if(to == null) {
-			curEvent.setBroadcast(true);
-		} else {
-			curEvent.setBroadcast(false);
-			curEvent.getTo().setValue(to.getValue());
-		}
-		curEvent.getLocalSender().setValue(serviceId);
-		ringBuffer.publish(curSequence);
-		curEvent = null;
+	public void send(MutableMessage msg) {
+		msg.getLocalSender().setValue(serviceId);
+		ringBuffer.publish(msg.getUniqueID());
 	}
 	
 }

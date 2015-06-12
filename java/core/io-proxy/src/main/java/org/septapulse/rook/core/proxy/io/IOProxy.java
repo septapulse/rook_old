@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import org.septapulse.rook.api.message.Message;
+import org.septapulse.rook.api.message.MutableMessage;
 import org.septapulse.rook.api.service.MessageCallback;
 import org.septapulse.rook.api.service.Receiver;
 import org.septapulse.rook.api.service.Sender;
@@ -92,7 +93,9 @@ public class IOProxy {
 	
 	public void sendPrimitiveOutputBatch() {
 		if(batchSize > 0) {
-			final ByteBuffer sendBuffer = sender.nextMessage().asWritableByteBuffer(8+(batchSize*16));
+			final MutableMessage msg = sender.nextMessage();
+			msg.setTo(ioServiceID);
+			final ByteBuffer sendBuffer = msg.getPayload().asWritableByteBuffer(8+(batchSize*16));
 			sendBuffer.order(ByteOrder.LITTLE_ENDIAN);
 			
 			// header
@@ -108,7 +111,7 @@ public class IOProxy {
 			}
 			
 			// send
-			sender.send(ioServiceID);
+			sender.send(msg);
 			
 			// reset
 			batchSize = 0;
@@ -116,7 +119,9 @@ public class IOProxy {
 	}
 
 	public void sendPrimitiveOutput(final long id, final long value) {
-		final ByteBuffer sendBuffer = sender.nextMessage().asWritableByteBuffer(24);
+		final MutableMessage msg = sender.nextMessage();
+		msg.setTo(ioServiceID);
+		final ByteBuffer sendBuffer = msg.getPayload().asWritableByteBuffer(8+(batchSize*16));
 		sendBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		
 		// header
@@ -130,11 +135,13 @@ public class IOProxy {
 		sendBuffer.putLong(value);
 		
 		// send
-		sender.send(ioServiceID);
+		sender.send(msg);
 	}
 	
 	public void sendBufferOutput(final long id, final ByteBuffer value) {
-		final ByteBuffer sendBuffer = sender.nextMessage().asWritableByteBuffer(16+value.remaining());
+		final MutableMessage msg = sender.nextMessage();
+		msg.setTo(ioServiceID);
+		final ByteBuffer sendBuffer = msg.getPayload().asWritableByteBuffer(8+(batchSize*16));
 		sendBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		
 		// header
@@ -148,7 +155,7 @@ public class IOProxy {
 		sendBuffer.put(value);
 		
 		// send
-		sender.send(ioServiceID);
+		sender.send(msg);
 	}
 
 	private final MessageCallback messageCallback = new MessageCallback() {
